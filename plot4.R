@@ -1,0 +1,20 @@
+f <- read.delim("household_power_consumption.txt",header = TRUE, sep=";",na.strings = "?")
+f$Date <- as.Date(f$Date, format="%d/%m/%Y")
+data <- subset(f,Date == "2007-02-01" | Date == "2007-02-02")
+rm(f)
+datetime <- paste(as.Date(data$Date), data$Time)
+data$Datetime <- as.POSIXct(datetime)
+
+
+png("plot4.png", width=480, height=480)
+par(mfrow=c(2,2), mar=c(4,4,2,1), oma=c(0,0,2,0))
+with(data,plot(Datetime,Global_active_power,ylab="Global active power",type="l",xlab=""))
+with(data,plot(Datetime,Voltage,type="l",ylab="Voltage",xlab="datetime"))
+with(data, { plot(Sub_metering_1~Datetime, type="l", ylab="Energy sub metering", xlab="")
+  lines(Sub_metering_2~Datetime,col='Red')
+  lines(Sub_metering_3~Datetime,col='Blue')
+})
+legend("topright", col=c("black", "red", "blue"), lty=1, lwd=2, 
+       legend=c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"))
+with(data,plot(Datetime,Global_reactive_power,type="l",xlab="datetime"))
+dev.off()
